@@ -159,6 +159,20 @@ var backendDrivers = &driverTable{
 	drivers: make(map[string]Driver),
 }
 
+func Unregister(name string) bool {
+	backendDrivers.Lock()
+	defer backendDrivers.Unlock()
+
+	_, exist := backendDrivers.drivers[name]
+	if !exist {
+		return false
+	}
+
+	delete(backendDrivers.drivers, name)
+
+	return true
+}
+
 // Register add a backend driver module.
 func Register(d Driver) error {
 	ctx := Contexts()

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -42,4 +43,40 @@ func TestIterateConfig(t *testing.T) {
 	config = make(map[string]interface{})
 	iterateConfig(nil, config)
 	assert.Equal(config, map[string]interface{}{})
+}
+
+func TestGetUnknownFlags(t *testing.T) {
+	assert := assert.New(t)
+	fileFlags := map[string]interface{}{
+		"a":    "a",
+		"b":    "b",
+		"c":    "c",
+		"i1":   "i1",
+		"i2":   "i2",
+		"iii1": "iii1",
+		"iii2": "iii2",
+	}
+
+	expect := fmt.Errorf("unknown flags: a, b, c")
+
+	fileSet := map[string]interface{}{
+		"i1":   "i1",
+		"i2":   "i2",
+		"iii1": "iii1",
+		"iii2": "iii2",
+	}
+	// test if it works
+	getUnknownFlags(fileSet, fileFlags)
+	assert.Equal(fileFlags, expect)
+
+	fileSet := map[string]interface{}{
+		"a":    "a",
+		"b":    "b",
+		"c":    "c",
+		"i1":   "i1",
+		"i2":   "i2",
+		"iii1": "iii1",
+		"iii2": "iii2",
+	}
+	assert.Equal(nil, getUnknownFlags(fileSet, fileFlags))
 }
